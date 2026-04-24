@@ -15,6 +15,7 @@ class ServicoExercicio {
     }
 
     async Adicionar(pessoa){
+      console.log(pessoa)
       if(!pessoa) {
         throw new Error("Favor preencher o pessoa.")
       } else if(!pessoa.nome) {
