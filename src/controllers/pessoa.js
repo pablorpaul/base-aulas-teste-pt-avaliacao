@@ -8,6 +8,10 @@ class ControllerExercicio {
         const id = req.params.id
 
         const result = await servico.PegarUm(id)
+
+        if(!result) {
+          return res.status(404).json({ message: "Pessoa não encontrada."});
+        }
         
         res.status(200).json(result);
       } catch (error) {
@@ -20,7 +24,7 @@ class ControllerExercicio {
       try {
         const result = await servico.PegarTodos()
 
-        res.status(201).json(result); 
+        res.status(200).json(result); 
       } catch (error) {
         res.status(500).json({ message: error.message});
       }
@@ -34,7 +38,7 @@ class ControllerExercicio {
         
         res.status(201).json({ message: "Adicionado com sucesso!"});
       } catch (error) {
-        if(error.parent.code === "ER_DUP_ENTRY") {
+        if(error.parent === "ER_DUP_ENTRY") {
           res.status(500).json({ message: "Email já cadastrado!"});
         }else{
           res.status(500).json({ message: error.parent.message || error.message});
@@ -44,14 +48,14 @@ class ControllerExercicio {
 
     async Alterar(req, res){
       try {
-        const id = req.params.id
-        const nome = req.body.nome
+        const { id } = req.params
+        const { pessoa } = req.body
     
-        await servico.Alterar(id, nome)
+        await servico.Alterar(id, pessoa)
           
         res.status(200).json({ message: "Alterado com sucesso!"});
       } catch (error) {
-        res.status(500).json({ message: error.errors.message || error.message});
+        res.status(500).json({ message: error.message});
         
       }
     }
@@ -62,7 +66,7 @@ class ControllerExercicio {
 
         await servico.Deletar(id)
           
-        res.status(200).json({ message: "Deletado com sucesso!"});
+        res.status(204).json();
       } catch (error) {
         res.status(500).json({ message: error.message});
         

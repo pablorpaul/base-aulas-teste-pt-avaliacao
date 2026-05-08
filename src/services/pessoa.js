@@ -15,7 +15,6 @@ class ServicoExercicio {
     }
 
     async Adicionar(pessoa){
-      console.log(pessoa)
       if(!pessoa) {
         throw new Error("Favor preencher o pessoa.")
       } else if(!pessoa.nome) {
@@ -25,25 +24,54 @@ class ServicoExercicio {
       } else if(!pessoa.senha) {
         throw new Error("Favor preencher o senha.")
       }
+      
+      if(!this.validarEmail(pessoa.email)) {
+        throw new Error("Email inválido. Favor fornecer um email válido.");
+      }
+
+      if (!pessoa.senha || pessoa.senha.trim().length === 0) {
+        throw new Error("Senha inválida. A senha não pode ser vazia ou conter apenas espaços.");
+      }
 
       return repositorio.Adicionar(pessoa)
     }
 
     async Alterar(id, pessoa){
       if(!id || isNaN(id)) {
-        throw new Error("Favor corretamente o id.")
+        throw new Error("Favor informar corretamente o id.")
+      }
+      const pessoaExistente = await repositorio.PegarUm(id)
+      if(!pessoaExistente) {
+        throw new Error("Pessoa não encontrada.")
+      }
+      if(!this.validarEmail(pessoa.email)) {
+        throw new Error("Email inválido. Favor fornecer um email válido.");
       }
 
-      return repositorio.Adicionar(pessoa)
+      if(pessoa.senha) {
+        if (pessoa.senha.trim().length === 0) {
+          throw new Error("Senha inválida. A senha não pode ser vazia ou conter apenas espaços.");
+        }
+      }
+      
+      return repositorio.Alterar(id, pessoa)
     }
 
     async Deletar(id){
       if(!id || isNaN(id)) {
         throw new Error("Favor corretamente o id.")
       }
+      const pessoaExistente = await repositorio.PegarUm(id)
+      if(!pessoaExistente) {
+        throw new Error("Pessoa não encontrada.")
+      }
 
       return repositorio.Deletar(id)
     }
 
+    validarEmail(email) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return regex.test(email);
+    }
 }
 module.exports = ServicoExercicio
